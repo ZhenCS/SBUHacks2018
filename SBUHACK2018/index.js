@@ -14,33 +14,18 @@
 	var app = $(".app")
 	var imageInput = $("#imageUrl");
 	var submitButton = $("#submitBtn");
-	var image = $("#image");
-	var tagsContainer = $(".tags-container");
-	var tags = $(".tags")
 	var appClarifai;
-	var imageLocal = $("fileField");
 
 	submitButton.on("click", function (event) {
 		// getting the input from the image
-		var url = imageInput.val()
+		var prediced = false;
+		var url = imageInput.val();
 		//resetInfo();
-		/*if(url.length == 0){
-			var canvas = document.createElement("canvas")
-			var context = canvas.getContext('2d')
-			
-			canvas.width = imageLocal.value.width;
-			canvas.height = imageLocal.value.height;
-			
-			url = canvas.toDataURL()
-			alert(url);
-		}*/ 
-		
-		tagsContainer.hide()
 
-		// You can ignore this part
-		// Set's the url of the image preview
-		image.attr("src", url)
-
+		if(!validURL(url)){
+			alert("Invalid URL. The URL must end in .jpg or .png");
+			return;
+		}
 
 		/*
 		 * TODO
@@ -48,16 +33,37 @@
 		 */
 	//	let appClarifai = new Clarifai.App({apiKey: '7fe98b11f3ef4db58d52e092c1349f8a'});
 		appClarifai.models.predict({id:'SBU Hacks2018', version:'a2809388b23b4f3f829037fc376a79d4'}, url).then(
-		function(response) {
-		// do something with response
-		console.log(response)
-		var concept = response.outputs[0].data.concepts[0];
-		var minProb = 0.49;
-		var name = "";
-		if(concept.value < minProb){
-			appClarifai.models.predict(Clarifai.GENERAL_MODEL, url).then(
 			function(response) {
+				// do something with response
+				var concept = response.outputs[0].data.concepts[0];
+				var minProb = 0.49;
+				var name = "";
+				if(concept.value > minProb){
+					console.log(concept.name);
+					name = concept.name;
+					prediced = true;
+					if(name != "" && name != "no person")
+						getWiki(name);	
+				}
+			},
+			function(err) {
+				alert("Try again in a few seconds (1)");
+			}
+		).then(
+			function() {
+				if(!prediced)
+					generalPrediction(url);
+			},
+			function(err) {
+				console.log("Try again in a few seconds (2)");
+			}
 				
+		);
+	});
+	
+	function generalPrediction(url){
+		appClarifai.models.predict(Clarifai.GENERAL_MODEL, url).then(
+			function(response) {
 				console.log(response.outputs[0].data.concepts[0].name);
 				console.log(response.outputs[0].data.concepts[1].name);
 				console.log(response.outputs[0].data.concepts[2].name);
@@ -66,55 +72,39 @@
 					getWiki(name);
 			},
 			function(err) {
-				console.log(err);
+				alert("Try again in a few seconds (3)");
 			}
-			);
-		} else{
-			console.log(concept.name);
-			name = concept.name;
-		}
-		
-		if(name != "")
-			getWiki(name);
-			
-		},
-		function(err) {
-		// there was an error
-			window.alert(err);
-			console.log(err);
-		}
 		);
-		/*
-		 * TODO
-		 * request colors for the image by using Clarifai function to get *colors by url. 
-		 */
+	}
 
-	});
-	
 	function getWiki(name){
-		var site = 'http://en.wikipedia.org/wiki/'+name;
+		name = name.charAt(0).toUpperCase() + name.slice(1);
+		var site = 'http://en.wikipedia.org/wiki/'+ name;
 			 WIKIPEDIA.getData(site, display, function(error) {
-				alert(error);
+				console.log(error);
 				}
 			);
+	}
+
+	function validURL(url){
+		var split = url.split(".");
+		var type = split[split.length - 1];
+		if(type == "png" || type == "jpg")
+			return true;
+
+		return false;
 	}
 	
 	var display = function(info) {
 
       rawData = info.raw;
       var summaryInfo = info.summary;
-      var properties = rawData[info.dbpediaUrl];
-	  console.log(info.summary.title)
-	  console.log(info.summary.description);
+      //var properties = rawData[info.dbpediaUrl];
 	  openInfo(info.summary.title, info.summary.description);
 
       for (key in summaryInfo) {
         $('.summary .' + key).text(summaryInfo[key]);
       }
- 
-      //var dataAsJson = JSON.stringify(summaryInfo, null, '    ')
-      //$('.summary .raw').val(dataAsJson);
-
  	};
 
 	// function to initialize the keys

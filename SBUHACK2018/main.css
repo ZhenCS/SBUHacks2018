@@ -20,11 +20,13 @@
 
 body{
 	overflow:hidden;
+	min-width: 1270px;
 }	
 
 #background{
 	position: absolute;
 	width: 100%;
+	min-width: 1270px;
 	height: 100%;
 	padding: 0px;
 	margin: 0px;
@@ -34,15 +36,15 @@ body{
 }
 
 #title{
-	border: 2px solid #33adff;
 	color: white;
 	width: 70%;
-	font-size: 20px;
+	font-size: 40px;
 	/*background-color: lightgrey;*/
 	display: block;
 	text-align: center;
 	padding: 10px;
 	margin: auto;
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 #infoDiv{
@@ -64,12 +66,18 @@ body{
 }
 
 #selectedImageContainer{
+	margin: 0px;
+	padding: 0px;
 	overflow:hidden;
 	border-radius: 7px;
+
+	max-width: 370px;
+	max-height: 370px;
 }
 
 #selectedImage{
 	height: 100%;
+	margin: auto;
 }
 
 #wikiDiv{
@@ -104,15 +112,6 @@ body{
 	width: 100%;
 }
 
-#exitInfo{
-	display: inline-block;
-	margin-top: -5px;
-	font-size: 35px;
-	font-weight: bold;
-	color: white;
-	font-family: arial;
-}
-
 #inputDiv{
 	/*background-color:pink;*/
 	display: block;
@@ -120,10 +119,7 @@ body{
 	width: 70%;
 	height: 12%;
 	z-index: 1;
-	padding: 10px;
-	margin-top: 40px;
-	
-	
+	padding: 10px;	
 }
 
 /*#inputDiv input{

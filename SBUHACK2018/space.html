@@ -34,32 +34,34 @@
 		
 		function setWidthSelectedImage(){
 			var height = infoDiv.offsetHeight;
-			selectedImageContainer.style.width = height + "px";
-	
-			var offset = -1 * (selectedImage.offsetWidth/2 - height/2);
-			selectedImage.style.marginLeft = offset + "px";
-			
-			//alert(selectedImage.offsetHeight);
-			//alert(selectedImage.offsetWidth);
-				
+			selectedImageContainer.style.width = height + "px";				
 		}
 		
+		function setSelectedImageOffset(){
+			var width = selectedImage.offsetWidth;
+			var offset = -1 * (width/2 - infoDiv.offsetHeight/2);
+			selectedImage.style.marginLeft = offset + "px";
+		}
+
 		function setPlanetSize(){
-		
 			var height = spaceRotation.offsetHeight;
 			
 			for(var i = 0; i < planets.length; i++){
-				var offset = -1 * Math.abs(planets[i].offsetWidth/2 - height/2);
+				var offset = -1 * (planets[i].offsetWidth/2 - height/2);
 				
 				planetContainers[i].style.transform = "rotate(0deg)";
 				planetContainers[i].style.width = height + "px";
+				planetContainers[i].style.height = height + "px";
 				planetContainers[i].style.left = (height * i + (70 * i)) + "px";
 				planets[i].style.marginLeft = offset + "px";
 			}
 		}
 		
 		function getRotationDegree(tr){
-			var values = tr.split('(')[1],
+			var values = tr.split('(')[1];
+			if(values == undefined)
+				return 0;
+
 			values = values.split(')')[0],
 			values = values.split(',');
 
@@ -68,7 +70,7 @@
 			var c = values[2];
 			var d = values[3];
 			
-			return Math.round(Math.atan2(b, a) * (180/Math.PI));;
+			return Math.round(Math.atan2(b, a) * (180/Math.PI));
 		}
 		
 		function rotate(){
@@ -97,12 +99,14 @@
 				planetContainer.className = "planetContainer";
 				planetImage.className = "planet";
 				planetImage.src = url.value;
+				
 				planetContainer.appendChild(planetImage);
 				spaceRotation.appendChild(planetContainer);
-				
-				setPlanetSize();
+				planetImage.onload = function(){
+					console.log("loaded");
+					setPlanetSize();
+				}
 			}
-			
 		}
 		
 		function openInfo(title, desc){
@@ -110,10 +114,10 @@
 			wikiDiv2.innerHTML = desc;
 			infoDiv.style.visibility = "initial";
 			selectedImage.src = url.value;
-			setWidthSelectedImage();
+			selectedImage.onload = function(){
+				setSelectedImageOffset();
+			}
 			addPlanet();
-			
-		
 		}
 		
 		function closeInfo(){
@@ -126,8 +130,8 @@
 			wikiDiv2.innerHTML = "";
 		}
 	</script>
-	<body onload = "initialize2();">
-		<image id = "background" src = "space2.gif" />
+	<body onload = "initialize2();" onclick = "closeInfo(); setPlanetSize();">
+		<image id = "background" src = "space2.gif"/>
 		<h2 id = "title">Selective Celestial Bodies</h2>
 		<div id = "spaceRotation">
 			<!--<div class = "planetContainer" >
@@ -148,7 +152,6 @@
 					
 				</div>
 			</div>
-			<div id = "exitInfo" onclick = "closeInfo();"> X </div>
 		</div>
 		<div id = "inputDiv">
 		<!-- imgur.com/gallery/mnb5Agr -->
